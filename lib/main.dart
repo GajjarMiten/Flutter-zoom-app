@@ -68,50 +68,57 @@ class _MeetingWidgetState extends State<MeetingWidget> {
         title: Text('Loading meeting '),
       ),
       body: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: ZoomView(onViewCreated: (controller) {
+        padding: EdgeInsets.all(16.0),
+        child: ZoomView(
+          onViewCreated: (controller) {
             print("Created the view");
 
-            controller.initZoom(this.widget.zoomOptions).then((results) {
-              print("initialised");
-              print(results);
+            controller.initZoom(this.widget.zoomOptions).then(
+              (results) {
+                print("initialised");
+                print(results);
 
-              if (results[0] == 0) {
-                // Listening on the Zoom status stream (1)
-                controller.zoomStatusEvents.listen((status) {
-                  print("Meeting Status Stream: " +
-                      status[0] +
-                      " - " +
-                      status[1]);
+                if (results[0] == 0) {
+                  // Listening on the Zoom status stream (1)
+                  controller.zoomStatusEvents.listen((status) {
+                    print("Meeting Status Stream: " +
+                        status[0] +
+                        " - " +
+                        status[1]);
 
-                  if (_isMeetingEnded(status[0])) {
-                    Navigator.pop(context);
-                    timer?.cancel();
-                  }
-                });
+                    if (_isMeetingEnded(status[0])) {
+                      Navigator.pop(context);
+                      timer?.cancel();
+                    }
+                  });
 
-                print("listen on event channel");
+                  print("listen on event channel");
 
-                controller
-                    .joinMeeting(this.widget.meetingOptions)
-                    .then((joinMeetingResult) {
-                  // Polling the Zoom status (2)
-                  timer = Timer.periodic(new Duration(seconds: 2), (timer) {
-                    controller
-                        .meetingStatus(this.widget.meetingOptions.meetingId)
-                        .then((status) {
-                      print("Meeting Status Polling: " +
-                          status[0] +
-                          " - " +
-                          status[1]);
+                  controller
+                      .joinMeeting(this.widget.meetingOptions)
+                      .then((joinMeetingResult) {
+                    // Polling the Zoom status (2)
+                    timer = Timer.periodic(new Duration(seconds: 2), (timer) {
+                      controller
+                          .meetingStatus(this.widget.meetingOptions.meetingId)
+                          .then((status) {
+                        print("Meeting Status Polling: " +
+                            status[0] +
+                            " - " +
+                            status[1]);
+                      });
                     });
                   });
-                });
-              }
-            }).catchError((error) {
-              print(error);
-            });
-          })),
+                }
+              },
+            ).catchError(
+              (error) {
+                print(error);
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }

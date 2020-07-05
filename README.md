@@ -1,6 +1,9 @@
 # zoom
 
 A new Flutter project.
+<p align="center">
+  <img src="example/zoom.gif" width="180" height = ""title="hover text">
+</p>
 
 ## Getting Started
 
